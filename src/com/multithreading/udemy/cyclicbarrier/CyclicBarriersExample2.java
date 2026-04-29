@@ -74,12 +74,10 @@ public class CyclicBarriersExample2 {
 		CyclicBarrier barrier = new CyclicBarrier(5, () -> System.out.println("We are able to use the trained neural network..."));
 		
 		for(int i=0;i<5;++i)
-			executorService.execute(new BarrierWorker(i+1, barrier));
+			executorService.execute(new BarrierWorker2(i+1, barrier));
 		
 		executorService.shutdown();
-		
-		
-		
+
 		// 2nd example
 		
 		CyclicBarrier barriers = new CyclicBarrier(5, new Runnable() {
@@ -88,8 +86,8 @@ public class CyclicBarriersExample2 {
 																	System.out.println("We are able to use the trained neural network...");
 																}});
 		
-		for(int i=0;i<5;++i)
-			executorService.execute(new BarrierWorker(i+1, barriers));
+		for(int i=0; i<5; ++i)
+			executorService.execute(new BarrierWorker2(i+1, barriers));
 		
 		executorService.shutdown();
 	}

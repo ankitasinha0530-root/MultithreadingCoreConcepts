@@ -24,6 +24,7 @@ class BarrierWorker implements Runnable{
 	public void run() {
 		doWork();
 	}
+
 	private void doWork() {
 		System.out.println("This thread : " + id + " starts executing the work...");
 		try {

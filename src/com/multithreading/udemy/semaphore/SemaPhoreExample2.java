@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
- * 
  * 	- semaphore maintains a set of permits
  *	- acquire() -> if a permit is available then takes it
  *	- release() -> adds a permit
@@ -36,7 +35,7 @@ enum Downloader2 {
 	private void download() {
 		System.out.println("Downloading data from the web...");
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -52,7 +51,7 @@ public class SemaPhoreExample2 {
 		for(int i=0;i<12;i++) {
 			executorService.execute(new Runnable() {
 				public void run() {
-					Downloader.INSTANCE.downloadData();
+					Downloader2.INSTANCE.downloadData();
 				}
 			});
 		}

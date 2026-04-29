@@ -1,7 +1,6 @@
-package com.multithreading.udemy.futurecallable;
+package com.multithreading.udemy.callableandfuture;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;

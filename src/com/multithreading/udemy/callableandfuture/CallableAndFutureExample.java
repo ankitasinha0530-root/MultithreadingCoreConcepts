@@ -8,11 +8,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-class Processor implements Callable<String>{
+class Processor1 implements Callable<String>{
 
 	int id;
 	
-	public Processor (int id) {
+	public Processor1 (int id) {
 		this.id = id;
 	}
 	@Override
