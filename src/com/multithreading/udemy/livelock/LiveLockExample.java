@@ -22,8 +22,7 @@ public class LiveLockExample {
 		
 		while(true) {
 			try {
-				lock1.tryLock(50, TimeUnit.MILLISECONDS);	
-				
+				lock1.tryLock(50, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -62,7 +61,6 @@ public class LiveLockExample {
 			}
 			break;
 		}
-		lock1.unlock();
 		lock2.unlock();
 	}
 	

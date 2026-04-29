@@ -23,9 +23,7 @@ public class LiveLockResolveExample {
 		while (true) {
 			try {
 				lock1.tryLock(50, TimeUnit.MILLISECONDS);
-
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			System.out.println("worker1 has acquired lock1");
