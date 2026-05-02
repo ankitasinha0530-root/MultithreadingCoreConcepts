@@ -1,4 +1,4 @@
-package PhilosopherProblem;
+package com.multithreading.philosopherproblem;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,13 +15,13 @@ public class App {
 			philosophers = new Philosopher[Constants.NUMBER_OF_PHILOSOPHERS];
 			ChopStick[] chopSticks = new ChopStick[Constants.NUMBER_OF_PHILOSOPHERS];
 			
-			for(int i=0;i<Constants.NUMBER_OF_CHOPSTICKS;i++){
+			for(int i = 0; i< Constants.NUMBER_OF_CHOPSTICKS; i++){
 				chopSticks[i] = new ChopStick(i);
 			}
 			
 			executorService = Executors.newFixedThreadPool(Constants.NUMBER_OF_PHILOSOPHERS);
 			
-			for(int i=0;i<Constants.NUMBER_OF_PHILOSOPHERS;i++){
+			for(int i = 0; i < Constants.NUMBER_OF_PHILOSOPHERS; i++){
 				philosophers[i] = new Philosopher(i, chopSticks[i], chopSticks[(i+1) % Constants.NUMBER_OF_PHILOSOPHERS]);
 				executorService.execute(philosophers[i]);
 			}
@@ -32,18 +32,13 @@ public class App {
 				philosopher.setFull(true);
 			}		
 		}finally{
-			
 			executorService.shutdown();
-			
 			while(!executorService.isTerminated()){
 				Thread.sleep(1000);
 			}
-			
 			for(Philosopher philosopher : philosophers ){
 				System.out.println(philosopher+" eat #"+philosopher.getEatingCounter());
 			}
-			
 		}
-		
 	}
 }

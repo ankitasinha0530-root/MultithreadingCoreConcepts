@@ -1,19 +1,19 @@
-package PhilosopherProblem;
+package com.multithreading.philosopherproblem;
 
 import java.util.Random;
 
 public class Philosopher implements Runnable {
 
 	private int id;
-	private ChopStick leftChopStick;
-	private ChopStick rightChopStick;
+	private final ChopStick leftChopStick;
+	private final ChopStick rightChopStick;
 	private volatile boolean isFull = false;
-	private Random random;
+	private final Random random;
 	private int eatingCounter;
 	
 	public Philosopher(int id, ChopStick leftChopStick, ChopStick rightChopStick){
 		this.id = id;
-		this.leftChopStick = leftChopStick;
+		this.leftChopStick= leftChopStick;
 		this.rightChopStick = rightChopStick;
 		this.random = new Random();
 	}
@@ -22,17 +22,13 @@ public class Philosopher implements Runnable {
 	public void run() {
 		
 		try{
-			
 			while( !isFull ){
-				
 				think();
-				
 				if( leftChopStick.pickUp(this, State.LEFT) ){
 					if( rightChopStick.pickUp(this, State.RIGHT)){
 						eat();
 						rightChopStick.putDown(this, State.RIGHT);
 					}
-					
 					leftChopStick.putDown(this, State.LEFT);
 				}	
 			}
