@@ -7,6 +7,11 @@ ReentrantLock
 Semaphore
 CountDownLatch
 ReentrantReadWriteLock
+FutureTask
+
+👉 Think of it as:
+
+Queue + CAS + blocking system
 
 ⚠️ Important
 
