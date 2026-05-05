@@ -1,0 +1,242 @@
+🚀 1. What is a Condition Variable?
+
+In Java, a condition variable is represented by:
+
+👉 Condition
+
+It is used with:
+
+👉 ReentrantLock
+
+🧠 Core Idea
+Lock → Condition → Wait / Signal
+
+👉 Threads can:
+
+Wait for a condition
+Be notified when condition is met
+🔥 2. Why not wait() / notify()?
+
+Old way (synchronized):
+
+wait();
+notify();
+
+Problems:
+
+❌ Only one wait-set per object
+❌ Hard to manage multiple conditions
+❌ Less control
+
+✅ Condition solves this
+
+👉 Multiple condition queues per lock
+
+⚙️ 3. Basic Working Example
+🎯 Problem: Producer–Consumer
+💻 Code
+import java.util.concurrent.locks.*;
+
+public class ConditionExample {
+
+    private final ReentrantLock lock = new ReentrantLock();
+    private final Condition notEmpty = lock.newCondition();
+
+    private int data = 0;
+    private boolean available = false;
+
+    public void produce(int value) throws InterruptedException {
+        lock.lock();
+        try {
+            while (available) {
+                notEmpty.await();
+            }
+
+            data = value;
+            available = true;
+
+            System.out.println("Produced: " + value);
+
+            notEmpty.signal();
+
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void consume() throws InterruptedException {
+        lock.lock();
+        try {
+            while (!available) {
+                notEmpty.await();
+            }
+
+            System.out.println("Consumed: " + data);
+            available = false;
+
+            notEmpty.signal();
+
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public static void main(String[] args) {
+
+        ConditionExample obj = new ConditionExample();
+
+        new Thread(() -> {
+            try {
+                for (int i = 1; i <= 5; i++) {
+                    obj.produce(i);
+                }
+            } catch (Exception e) {}
+        }).start();
+
+        new Thread(() -> {
+            try {
+                for (int i = 1; i <= 5; i++) {
+                    obj.consume();
+                }
+            } catch (Exception e) {}
+        }).start();
+    }
+}
+🧠 4. How it Works Internally
+
+When you call:
+
+condition.await();
+
+👉 Steps:
+
+Release lock 🔓
+Add thread to condition queue
+Block (park thread)
+
+When:
+
+condition.signal();
+
+👉 Steps:
+
+Move thread from condition queue → lock queue
+Thread competes to acquire lock again
+🔥 5. Two Queues (VERY IMPORTANT)
+Condition Queue → waiting threads
+AQS Queue → lock acquisition queue
+🧠 Flow
+await() → move to condition queue
+signal() → move to AQS queue
+⚠️ 6. CRITICAL RULES (MUST KNOW)
+❗ 1. Always use while, NOT if
+while (!condition) {
+    await();
+}
+
+👉 Because of spurious wakeups
+
+❗ 2. Must hold lock before await/signal
+lock.lock();
+condition.await(); // OK
+condition.await(); // ❌ IllegalMonitorStateException
+❗ 3. Signal does NOT release lock
+condition.signal();
+
+👉 Thread wakes but waits for lock
+
+❗ 4. Missed signal problem
+
+If signal happens before await → thread may wait forever
+
+🔥 7. Multiple Conditions (BIG ADVANTAGE)
+Condition notFull = lock.newCondition();
+Condition notEmpty = lock.newCondition();
+💻 Example (Bounded Buffer)
+import java.util.concurrent.locks.*;
+
+public class BoundedBuffer {
+
+    private final ReentrantLock lock = new ReentrantLock();
+    private final Condition notFull = lock.newCondition();
+    private final Condition notEmpty = lock.newCondition();
+
+    private int count = 0;
+    private final int capacity = 5;
+
+    public void produce() throws InterruptedException {
+        lock.lock();
+        try {
+            while (count == capacity) {
+                notFull.await();
+            }
+
+            count++;
+            System.out.println("Produced → " + count);
+
+            notEmpty.signal();
+
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void consume() throws InterruptedException {
+        lock.lock();
+        try {
+            while (count == 0) {
+                notEmpty.await();
+            }
+
+            System.out.println("Consumed → " + count);
+            count--;
+
+            notFull.signal();
+
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+⚔️ 8. Condition vs wait/notify
+Feature	Condition	wait/notify
+Multiple queues	✅	❌
+Explicit lock	✅	❌
+Flexibility	High	Low
+⚠️ 9. Real Production Bugs
+❌ Lost signal
+signal() happens before await()
+
+👉 Thread stuck forever
+
+❌ Deadlock
+
+Wrong condition usage
+
+❌ Starvation
+
+Threads not getting signal
+
+🔥 10. Advanced Methods
+await()
+awaitUninterruptibly()
+awaitNanos()
+await(long time, TimeUnit unit)
+
+signal()
+signalAll()
+⚠️ signal vs signalAll
+Method	Behavior
+signal()	wakes 1 thread
+signalAll()	wakes all threads
+
+👉 Use signalAll() when:
+
+multiple conditions
+risk of missed signal
+🧠 11. Mental Model
+Lock → Condition → Wait → Signal → Re-acquire lock
+🚀 12. Interview Killer Answer
+
+Condition variables allow threads to wait and be notified under a lock.
+They provide multiple wait queues and finer control compared to wait/notify.

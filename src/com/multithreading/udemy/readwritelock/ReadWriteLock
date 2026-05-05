@@ -1,0 +1,117 @@
+🚀 1. What is a Read–Write Lock?
+
+👉 A ReadWriteLock allows:
+
+    ✅ Multiple threads to read simultaneously
+    ❌ Only one thread to write at a time
+    ❌ No read while writing
+    🧠 Why not just synchronized?
+
+Because synchronized:
+
+    Only ONE thread at a time (even for reads) ❌
+    👉 Read-heavy systems become slow
+
+🔥 Solution
+    Many readers OR one writer
+    ⚙️ 2. Java Implementation
+
+Java provides:
+
+    👉 ReentrantReadWriteLock
+
+
+🔍 4. Internal Behavior (VERY IMPORTANT)
+🔹 Read Lock
+    Multiple threads allowed
+    Uses shared access
+
+🔹 Write Lock
+    Exclusive access
+    Blocks:
+    other writers ❌
+    all readers ❌
+🧠 Internal State (Simplified)
+    readCount = number of readers
+    writeOwner = thread holding write lock
+🔥 5. Lock Rules
+Scenario	            Allowed?
+Read + Read	            ✅
+Read + Write	        ❌
+Write + Write	        ❌
+
+⚠️ 6. Corner Cases (VERY IMPORTANT)
+❗ 1. Writer Starvation
+
+    👉 Too many readers:
+
+    Readers keep coming → writer never gets chance ❌
+    ✅ Fix: Fair Lock
+    new ReentrantReadWriteLock(true);
+    ❗ 2. Lock Downgrading (Allowed)
+
+    👉 Write → Read
+
+        lock.writeLock().lock();
+        try {
+            // modify
+
+            lock.readLock().lock(); // acquire read before releasing write
+        } finally {
+            lock.writeLock().unlock();
+        }
+    ❗ 3. Lock Upgrading (NOT Allowed)
+
+        👉 Read → Write
+
+        lock.readLock().lock();
+        lock.writeLock().lock(); // ❌ DEADLOCK risk
+    ❗ 4. Deadlock Scenario
+        Thread1: read → wants write
+        Thread2: read → wants write
+        → both stuck forever ❌
+    ❗ 5. Forgetting unlock()
+
+        👉 Causes system hang
+
+
+⚔️ 8. ReadWriteLock vs Other Locks
+Feature                 	ReadWriteLock	synchronized	ReentrantLock
+Multiple readers	          ✅	            ❌	            ❌
+Write exclusivity	          ✅	            ✅           	✅
+Performance (read-heavy)    	🔥           	❌           	❌
+
+🔥 9. Advanced: Reentrancy
+
+👉 Same thread can re-acquire lock
+
+lock.writeLock().lock();
+lock.writeLock().lock(); // allowed
+
+🧠 10. When to Use
+
+Use ReadWriteLock when:
+
+    ✅ Reads >> Writes
+    ✅ Shared data structure
+    ✅ High concurrency
+
+❌ When NOT to Use
+
+    ❌ Write-heavy systems
+    ❌ Simple cases → use synchronized
+    ❌ Risk of deadlocks
+
+🔥 11. Performance Insight
+
+👉 Best case:
+
+    100 readers → all run in parallel 🚀
+
+👉 Worst case:
+
+Frequent writes → behaves like normal lock
+🧠 12. Interview Answer (Perfect)
+
+ReadWriteLock allows multiple readers but only one writer.
+It improves performance in read-heavy systems by reducing contention while maintaining data consistency.
